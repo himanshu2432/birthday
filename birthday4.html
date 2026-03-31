@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Khushi ❤️</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+  color: white;
+  text-align: center;
+}
+
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.card {
+  position: relative;
+  z-index: 2;
+  background: rgba(255,255,255,0.15);
+  padding: 30px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+}
+
+button {
+  padding: 10px 20px;
+  border-radius: 30px;
+  border: none;
+  background: #ff4d6d;
+  color: white;
+  cursor: pointer;
+}
+
+.hidden-message, .letter {
+  display: none;
+  margin-top: 15px;
+}
+
+/* Balloons */
+.balloon {
+  position: absolute;
+  bottom: -80px;
+  width: 40px;
+  height: 50px;
+  border-radius: 50% 50% 45% 45%;
+  animation: rise 5s linear forwards;
+  z-index: 1;
+}
+
+@keyframes rise {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-110vh); opacity: 0; }
+}
+
+/* Hearts */
+.heart {
+  position: absolute;
+  font-size: 20px;
+  animation: floatUp 6s linear infinite;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-100vh); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="fireworks"></canvas>
+
+<div class="card">
+  <h1>🎉 Happy Birthday Khushi 💖</h1>
+  <p>To the most special girl in my life...</p>
+
+  <button onclick="startSurprise()">Click for Surprise 🎁</button>
+
+  <div class="hidden-message" id="message">
+    Khushi, you are my happiness 😊❤️
+  </div>
+
+  <div class="letter" id="letter"></div>
+
+  <audio id="bgMusic" loop>
+    <source src="birthday_song.mp3" type="audio/mpeg">
+  </audio>
+</div>
+
+<script>
+
+const letterText = `Hey Birthday Girl Khushi ❤️\n\nAaj ka din sirf tumhara hai… but honestly, mujhe lagta hai main zyada lucky hoon, kyunki tum meri life mein ho. 💖\n\nPata hai, jab bhi tum smile karti ho na… dil literally skip kar deta hai 😍\nAur jab tum baat karti ho, lagta hai bas sunta hi rahu… kabhi khatam hi na ho.\n\nTum sirf meri pasand nahi ho, tum meri aadat ban chuki ho… aur sach bolu toh, mujhe yeh aadat kabhi chhodni bhi nahi hai 😏💞\n\nAaj tumhare birthday pe main bas itna kehna chahta hoon—\ntum jitni beautiful bahar se ho, usse bhi zyada dil se ho.\nAur mujhe tumhari yeh har ek baat pasand hai… but thodi gusse wali ho 😉\n\nAur haan… ek smile toh banti hai mere liye 😍✨\n\nHappy Birthday Khushi ❤️\n\n– Yours, Himanshu ❤️`;
+
+function typeWriter(text, i) {
+  if (i < text.length) {
+    document.getElementById("letter").innerHTML = text.substring(0, i+1);
+    setTimeout(() => typeWriter(text, i+1), 30);
+  }
+}
+
+function createHearts() {
+  setInterval(() => {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerHTML = "❤️";
+    heart.style.left = Math.random()*100 + "vw";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),6000);
+  },300);
+}
+
+function createBalloons() {
+  let total = 15;
+  let created = 0;
+
+  let interval = setInterval(() => {
+    if (created >= total) {
+      clearInterval(interval);
+      return;
+    }
+
+    const balloon = document.createElement("div");
+    balloon.className = "balloon";
+
+    const colors = ["#ff4d6d","#ff85a1","#ffc2d1","#ff758f"];
+    balloon.style.background = colors[Math.floor(Math.random()*colors.length)];
+
+    balloon.style.left = Math.random()*100 + "vw";
+
+    document.body.appendChild(balloon);
+
+    setTimeout(()=>balloon.remove(),5200);
+
+    created++;
+  },250);
+}
+
+let started = false;
+
+function startSurprise() {
+  if (started) return;
+  started = true;
+
+  document.getElementById('message').style.display = 'block';
+  document.getElementById('letter').style.display = 'block';
+
+  typeWriter(letterText, 0);
+  createHearts();
+  createBalloons();
+
+  document.getElementById("bgMusic").play();
+  startFireworks();
+}
+
+// Fireworks
+const canvas = document.getElementById('fireworks');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+function createFirework() {
+  const x = Math.random()*canvas.width;
+  const y = Math.random()*canvas.height/2;
+
+  for (let i=0;i<50;i++) {
+    particles.push({
+      x:x, y:y,
+      dx:(Math.random()-0.5)*5,
+      dy:(Math.random()-0.5)*5,
+      life:100
+    });
+  }
+}
+
+function updateFireworks() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  particles.forEach((p,i)=>{
+    p.x+=p.dx;
+    p.y+=p.dy;
+    p.life--;
+
+    ctx.fillStyle="white";
+    ctx.fillRect(p.x,p.y,2,2);
+
+    if(p.life<=0) particles.splice(i,1);
+  });
+
+  requestAnimationFrame(updateFireworks);
+}
+
+function startFireworks() {
+  setInterval(createFirework,800);
+  updateFireworks();
+}
+
+</script>
+
+</body>
+</html>
